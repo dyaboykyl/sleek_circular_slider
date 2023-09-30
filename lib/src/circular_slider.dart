@@ -57,6 +57,7 @@ class _SleekCircularSliderState extends State<SleekCircularSlider>
   double? _oldWidgetAngle;
   double? _oldWidgetValue;
   double? _currentAngle;
+  bool _dragging = false;
   late double _startAngle;
   late double _angleRange;
   double? _selectedAngle;
@@ -186,8 +187,9 @@ class _SleekCircularSliderState extends State<SleekCircularSlider>
         selectedAngle: _selectedAngle,
         defaultAngle: defaultAngle,
         counterClockwise: counterClockwise);
-    if (_currentAngle == 0 && newAngle >= _angleRange - buffer ||
-        _currentAngle == _angleRange && newAngle <= buffer) {
+    if (_dragging &&
+        (_currentAngle == 0 && newAngle >= _angleRange - buffer ||
+            _currentAngle == _angleRange && newAngle <= buffer)) {
       return;
     }
     _currentAngle = newAngle;
@@ -246,10 +248,12 @@ class _SleekCircularSliderState extends State<SleekCircularSlider>
     if (_painter?.center == null) {
       return;
     }
+    _dragging = true;
     _handlePan(details, false);
   }
 
   void _onPanEnd(Offset details) {
+    _dragging = false;
     _handlePan(details, true);
     if (widget.onChangeEnd != null) {
       widget.onChangeEnd!(angleToValue(_currentAngle!, widget.min, widget.max, _angleRange));
